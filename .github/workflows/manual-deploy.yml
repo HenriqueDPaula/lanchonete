@@ -6,37 +6,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-2
+      CLUSTER_NAME: demo
     steps:
-      - name: Configure AWS credentials
+      - uses: actions/checkout@v3
+
+      - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}  --kubeconfig ./kubeconfig
+          echo 'KUBE_CONFIG_DATA<<EOF' >> $GITHUB_ENV
+          echo $(cat ./kubeconfig | base64) >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
-      - uses: actions/checkout@v2
-      - name: Apply database config
-        uses: nikosch86/github-action-eks-kubectl@main
-        with:
-          command: "apply -f kubernetes/postgres/"
+      - name: helm deploy
+        uses: koslib/helm-eks-action@master
         env:
-          EKS_CLUSTER: demo  
-
-      - uses: actions/checkout@v2
-      - name: Apply application deploy
-        uses: nikosch86/github-action-eks-kubectl@main
+          KUBE_CONFIG_DATA: ${{ env.KUBE_CONFIG_DATA }}
         with:
-          command: "apply -f kubernetes/"
-        env:
-          EKS_CLUSTER: demo  
-
-      - uses: actions/checkout@v2
-      - name: Verify 
-        uses: nikosch86/github-action-eks-kubectl@main
-        with:
-          command: "get svc"
-        env:
-          EKS_CLUSTER: demo  
+          plugins: "https://github.com/jkroepke/helm-secrets" # optional
+          command: helm --install -f ./kubernetes
 
 
           
