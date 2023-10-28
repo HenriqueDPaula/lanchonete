@@ -35,7 +35,7 @@ jobs:
 
       - name: Get URL
         id: url
-      - uses: tale/kubectl-action@v1
+        uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG_DATA }}
       - run: kubectl get svc  
