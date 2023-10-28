@@ -35,10 +35,10 @@ jobs:
 
       - name: Get URL
         id: url
-        uses: koslib/helm-eks-action@master
+      - uses: tale/kubectl-action@v1
         with:
-          command: kubectl get svc lanchonete-lb-svc -o json | jq -r '.status.loadBalancer.ingress[0].hostname'
+          base64-kube-config: ${{ secrets.KUBE_CONFIG_DATA }}
+      - run: kubectl get svc  
 
-
-          
-        
+     
+    
