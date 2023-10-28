@@ -31,14 +31,9 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ env.KUBE_CONFIG_DATA }}
         with:
-          command: kubectl apply -f ./kubernetes
-
-      - name: Get URL
-        id: url
-        uses: tale/kubectl-action@v1
-        with:
-          base64-kube-config: ${{ secrets.KUBE_CONFIG_DATA }}
-      - run: kubectl get svc  
+          command: |
+            kubectl apply -f kubernetes/
+            kubectl get svc
 
      
     
