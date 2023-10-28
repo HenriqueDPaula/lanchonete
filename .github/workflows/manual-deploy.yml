@@ -33,5 +33,12 @@ jobs:
         with:
           args: apply -f kubernetes/
 
+      - name: get url
+        uses: Jberlinsky/kubernetes-action@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: get svc lanchonete-lb-svc
+
      
     
