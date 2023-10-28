@@ -18,27 +18,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
-      - name: kubeconfig
-        run: |
-          aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}  --kubeconfig ./kubeconfig
-          echo 'KUBE_CONFIG_DATA<<EOF' >> $GITHUB_ENV
-          echo $(cat ./kubeconfig | base64) >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
 
-      - name: deploy
-        uses: Jberlinsky/kubernetes-action@master
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      - name: Run kubectl
+        uses: nikosch86/github-action-eks-kubectl@main
         with:
-          args: apply -f kubernetes/
+          command: "apply kubernetes/"
+        env:
+          EKS_CLUSTER: ${{ env.CLUSTER_NAME }}
 
-      - name: get url
-        uses: Jberlinsky/kubernetes-action@master
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      - name: Run kubectl
+        uses: nikosch86/github-action-eks-kubectl@main
         with:
-          args: get svc lanchonete-lb-svc
+          command: "get svc lanchonete-lb-svc"
+        env:
+          EKS_CLUSTER: ${{ env.CLUSTER_NAME }}
 
      
     
