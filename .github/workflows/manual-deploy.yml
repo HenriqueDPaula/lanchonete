@@ -19,14 +19,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Run kubectl
+      - name: Run database config
+        uses: nikosch86/github-action-eks-kubectl@main
+        with:
+          command: "apply -f kubernetes/postgres/"
+        env:
+          EKS_CLUSTER: ${{ env.CLUSTER_NAME }}
+
+      - name: Run application deploy
         uses: nikosch86/github-action-eks-kubectl@main
         with:
           command: "apply -f kubernetes/"
         env:
-          EKS_CLUSTER: ${{ env.CLUSTER_NAME }}
+          EKS_CLUSTER: ${{ env.CLUSTER_NAME }} 
 
-      - name: Run kubectl
+      - name: Run get loadbalancer service
         uses: nikosch86/github-action-eks-kubectl@main
         with:
           command: "get svc lanchonete-lb-svc"
