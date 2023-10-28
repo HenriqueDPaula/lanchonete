@@ -4,5 +4,5 @@ metadata:
   name: postgres-config
 data:
   POSTGRES_DB: lanchonete
-  DB_URL: jdbc:postgresql://lanchonete-fiap-database.cwkzn5gzfo3p.us-east-2.rds.amazonaws.com:5432/lanchonete
+  DB_URL: jdbc:postgresql://lanchonete.cwkzn5gzfo3p.us-east-2.rds.amazonaws.com:5432/lanchonete
 
